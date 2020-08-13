@@ -1,26 +1,36 @@
+import MapLoader
+import Training
+import numpy as np
+
 from World import World
 from World import Action
 
-import MapLoader
+policy = Training.jump_slab()
 
-tile_map = MapLoader.open_file('sample_map.txt')
-world = World(tile_map)
+# load test map from file
+test_map = MapLoader.open_file('test_map.txt')
 
-print(world.print())
-key = input('')
-while key is not 'q':
-    action = None
-    if key == 'w' or key == 'W':
-        action = Action.WALK
-    elif key == 'n' or key == 'N':
-        action = Action.NOTHING
-    elif key == 'j' or key == 'J':
-        action = Action.JUMP
+# create world from loaded map
+test_world = World(test_map)
+print(test_world)
 
-    if action is None:
-        print('Comando invalido')
-    else:
-        world.step(action)
-        print(world.print())
-        
+# test policy
+while True:
     key = input('')
+    if key == 'q':
+        break
+
+    # get action from learned policy
+    a = policy.action(test_world.agent_state())
+    print(a.name)
+
+    # perform action
+    test_world.step(a)
+
+    print(test_world)
+
+    if test_world.goal_achieved():
+        print('Goal achieved, restarting world...')
+        test_world = World(test_map)
+        print(test_world)
+
