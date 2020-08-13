@@ -19,6 +19,8 @@ class World:
         self.current_pos = None
         self.end_pos = None
         self.last_action = None
+        self.steps = 0
+        self.max_steps = None
 
         self.rows = len(tile_map)
         self.columns = len(tile_map[0])
@@ -38,6 +40,9 @@ class World:
                     tile_row.append(tile_map[row][col])
 
             self.tile_map.append(tile_row)
+
+    def set_max_steps(self, max_steps):
+        self.max_steps = max_steps
 
     def is_empty(self, pos):
         row, col = pos
@@ -80,19 +85,23 @@ class World:
 
         self.current_pos = new_pos
         self.last_action = action
+        self.steps += 1
 
     def __str__(self):
-        tiles_str = 'agent: {}, state: {}\ngoal: {}'.format(self.current_pos, self.agent_state(), self.end_pos)
+        tiles_str = 'agent: {}, state: {}\ngoal: {}\n'.format(self.current_pos, self.agent_state(), self.end_pos)
 
         for row in reversed(range(self.rows)):
+            tiles_str += '|'
             for col in range(self.columns):
                 if (self.current_pos == np.array([row, col])).all():
                     tiles_str += '*'
+                elif (self.end_pos == np.array([row, col])).all():
+                    tiles_str += 'o'
                 elif self.tile_map[row][col] == Tile.BRICK:
                     tiles_str += Tile.BRICK.get_char()
                 elif self.tile_map[row][col] == Tile.EMPTY:
                     tiles_str += Tile.EMPTY.get_char()
-            tiles_str += '\n'
+            tiles_str += '|\n'
 
         return tiles_str
     
@@ -101,3 +110,14 @@ class World:
 
     def goal_achieved(self):
         return (self.current_pos == self.end_pos).all()
+
+    def goal_surpassed(self):
+        return self.current_pos[1] > self.end_pos[1]
+
+    def max_steps_surpassed(self):
+        if self.max_steps is None:
+            return False
+        return self.steps >= self.max_steps
+
+    def finished_episode(self):
+        return self.max_steps_surpassed() or self.goal_achieved() or self.goal_surpassed()

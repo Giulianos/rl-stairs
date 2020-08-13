@@ -5,10 +5,10 @@ import numpy as np
 from World import World
 from World import Action
 
-policy = Training.jump_slab()
+policy = Training.falling()
 
 # load test map from file
-test_map = MapLoader.open_file('test_map.txt')
+test_map = MapLoader.open_file('test_maps/falling.map')
 
 # create world from loaded map
 test_world = World(test_map)
@@ -22,7 +22,7 @@ while True:
 
     # get action from learned policy
     a = policy.action(test_world.agent_state())
-    print(a.name)
+    print(policy.current_option.name)
 
     # perform action
     test_world.step(a)

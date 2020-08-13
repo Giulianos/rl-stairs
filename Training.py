@@ -2,9 +2,11 @@ import MapLoader
 import numpy as np
 
 from World import World, Action
+from Tile import Tile
 from Policy import GreedyPolicy
-from Option import PrimitiveOption
+from Option import Option, PrimitiveOption
 from QLearning import learn_episodic
+from State import State
 
 def training_base(name, options, map_file):
     print('Learning {}...'.format(name))
@@ -12,17 +14,25 @@ def training_base(name, options, map_file):
 
     # setup parameters
     max_episodes = 10000
-    max_steps = 100
-    total_max_steps = max_episodes*max_steps
-    alpha = lambda t: 0.8 * np.exp(-1*t/total_max_steps)
-    epsilon = lambda t: 0.5 * np.exp(-3*t/total_max_steps)
+    max_steps = 15
+    alpha = lambda t: 0.5 * np.exp(-1*t/max_episodes)
+    epsilon = lambda t: 0.3 * np.exp(-10*t/max_episodes)
 
     # reward function
     def reward_func(env):
         if env.goal_achieved():
-            return 1
+            return 100
+        elif env.max_steps_surpassed() or env.goal_surpassed():
+            return -100
         else:
-            return -1
+            return -10
+
+    # world generator
+    def world_gen(episode):
+        w = World(training_map)
+        w.set_max_steps(max_steps)
+
+        return w
 
     if len(options) == 0:
         options = [ 
@@ -34,14 +44,13 @@ def training_base(name, options, map_file):
 
     # learn the policy
     learn_episodic(
-            world_gen=lambda e: World(training_map),
+            world_gen=world_gen,
             policy=policy,
-            reward_func=lambda env: 1 if env.goal_achieved() else -1,
-            max_steps=max_steps,
+            reward_func=reward_func,
             max_episodes=max_episodes,
-            alpha=lambda t: 0.8 * np.exp(-1*t/max_steps),
-            epsilon=lambda t: 0.5 * np.exp(-3*t/max_steps),
-            discount_rate=0.9,
+            alpha=alpha,
+            epsilon=epsilon,
+            discount_rate=0.95,
         )
 
     # print q table
@@ -52,3 +61,33 @@ def training_base(name, options, map_file):
 
 def jump_slab():
     return training_base('jump slab', [], 'training_maps/jump_slab.map')
+
+
+brick_ahead_floor = State((0,0), [[Tile.EMPTY, Tile.BRICK], [Tile.EMPTY, Tile.EMPTY]])
+empty_ahead_floor = State((0,0), [[Tile.EMPTY, Tile.EMPTY], [Tile.EMPTY, Tile.EMPTY]])
+
+def falling():
+    # learn to climb slabs
+    jump_slab_policy = jump_slab()
+    # learn to fall and climb slabs
+    jump_slab_option = Option(
+            'CLIMB_SLAB',
+            jump_slab_policy,
+            lambda s: s == brick_ahead_floor,
+            lambda s: s == empty_ahead_floor,
+    )
+
+    print('CLIMB_WALL will start when state is {}'.format(brick_ahead_floor))
+    print('CLIMB_WALL will end when state is {}'.format(empty_ahead_floor))
+
+    return training_base(
+            'falling',
+            [
+                PrimitiveOption(Action.NOTHING),
+                PrimitiveOption(Action.WALK),
+                PrimitiveOption(Action.JUMP),
+                jump_slab_option,
+            ],
+            'training_maps/falling.map'
+    )
+    

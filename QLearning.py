@@ -3,7 +3,6 @@ import numpy as np
 def learn_episodic(world_gen,
         policy,
         reward_func,
-        max_steps,
         max_episodes,
         alpha,
         epsilon,
@@ -11,12 +10,12 @@ def learn_episodic(world_gen,
 
     for episode in range(max_episodes):
         env = world_gen(episode)
-        for step in range(max_steps):
+        while not env.finished_episode():
             # agent state
             s = env.agent_state()
 
             # get action from policy
-            policy.epsilon = epsilon(step)
+            policy.epsilon = epsilon(episode)
             a = policy.action(s)
             
             # perform action
@@ -27,14 +26,11 @@ def learn_episodic(world_gen,
             reward = reward_func(env)
 
             # update policy if option ended
-            if policy.option_did_finished(s):
+            if policy.option_did_finished(s) or env.finished_episode():
                 o = policy.current_option_index
                 o_prime = np.argmax(policy.q_values(s))
                 td_target = reward + discount_rate * policy.q_value(s_prime, o_prime)
                 q_value = policy.q_value(s, o)
                 td_delta = td_target - q_value
-                policy.update_q(s, o, q_value + alpha(step)*td_delta)
-
-            if env.goal_achieved():
-                break
+                policy.update_q(s, o, q_value + alpha(episode)*td_delta)
 

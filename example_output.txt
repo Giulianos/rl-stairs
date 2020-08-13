@@ -1,0 +1,140 @@
+Learning jump slab...
+_.: JUMP [-9.23922999 -9.26210356 -9.19601455]
+  : WALK [-9.10149735  1.         -9.10669784]
+_ : NOTHING [0. 0. 0.]
+
+CLIMB_WALL will start when state is _.
+CLIMB_WALL will end when state is _ 
+Learning falling...
+_.: CLIMB_SLAB [-1.         -1.         -6.60443247  0.        ]
+  : JUMP [-7.61045722 -7.58232296 -7.49073999 -7.66049428]
+_ : WALK [-8.27303149 -7.54020355 -7.69270371 -7.70470299]
+
+agent: [0 9], state: _.
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+           OO   
+         *OOOx  
+
+
+CLIMB_SLAB
+agent: [1 9], state:   
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+         * OO   
+          OOOx  
+
+
+CLIMB_SLAB
+agent: [ 1 10], state: _.
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+          *OO   
+          OOOx  
+
+
+CLIMB_SLAB
+agent: [ 2 10], state:   
+goal: [ 0 13]                
+                
+                
+                
+                
+          * O   
+           OO   
+          OOOx  
+
+
+CLIMB_SLAB
+agent: [ 2 11], state: _.
+goal: [ 0 13]                
+                
+                
+                
+                
+           *O   
+           OO   
+          OOOx  
+
+
+CLIMB_SLAB
+agent: [ 3 11], state:   
+goal: [ 0 13]                
+                
+                
+                
+           *    
+            O   
+           OO   
+          OOOx  
+
+
+CLIMB_SLAB
+agent: [ 3 12], state: _ 
+goal: [ 0 13]                
+                
+                
+                
+            *   
+            O   
+           OO   
+          OOOx  
+
+
+WALK
+agent: [ 2 13], state:   
+goal: [ 0 13]                
+                
+                
+                
+                
+            O*  
+           OO   
+          OOOx  
+
+
+JUMP
+agent: [ 1 13], state:   
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+           OO*  
+          OOOx  
+
+
+JUMP
+agent: [ 0 13], state: _ 
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+           OO   
+          OOO*  
+
+Goal achieved, restarting world...
+agent: [0 9], state: _.
+goal: [ 0 13]                
+                
+                
+                
+                
+            O   
+           OO   
+         *OOO
